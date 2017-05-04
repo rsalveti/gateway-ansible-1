@@ -4,11 +4,10 @@
 
 # Host dependencies: 
 #    install ansible, 
-#    create and copy ssh key, 
-#    create mosquitto conf file, 
-#    update IP address for tiny-proxy
-#   apt -y install ansible && ssh-keygen -t rsa -f ~/.ssh/id_rsa -N ""
-#   ssh-copy-id <ip-address-of-gateway>
+#    create and copy ssh key
+#    run playbook with appropriate parameters
+#  ansible-playbook -e "mqttuser= mqttpass= mqtthost= mqttport= gitci=" -i targethost, iot-gateway.yml
+
 
 #run the mosquitto broker
 - hosts: all
@@ -17,9 +16,26 @@
     copy:
       src: mosquitto.conf
       dest: /home/linaro/mosquitto.conf
-      owner: linaro
-      group: linaro
-      mode: 0755
+  - name: add password
+    lineinfile: dest=/home/linaro/mosquitto.conf
+                regexp='^remote_password \#'
+                insertbefore=BOF
+                line='remote_password {{ mqttpass }}'
+  - name: add username
+    lineinfile: dest=/home/linaro/mosquitto.conf
+                regexp='^remote_username \#'
+                insertbefore=BOF
+                line='remote_username {{ mqttuser }}'
+  - name: add address and port
+    lineinfile: dest=/home/linaro/mosquitto.conf
+                regexp='^address \#'
+                insertbefore=BOF
+                line='address {{ mqtthost }}:{{ mqttport }}'
+  - name: add mqtt upstream connection name
+    lineinfile: dest=/home/linaro/mosquitto.conf
+                regexp='^connection \#'
+                insertbefore=BOF
+                line='connection mqtt-generic'
   - name: Start mosquitto container
     command: sh -c "docker stop mosquitto; docker rm mosquitto; "\
                    "docker run --restart=always -d -t --net=host "\
@@ -32,7 +48,7 @@
   - name: Run tiny-proxy container
     command: sh -c "docker stop tinyproxy; docker rm tinyproxy; "\
                    "docker run --restart=always -d -t --net=host "\
-                           "--add-host=gitci.com:192.168.0.43 "\
+                           "--add-host=gitci.com:{{ gitci }} "\
                            "--name tinyproxy linarotechnologies/tinyproxy:latest-arm64"
 
 #run bt-joiner
