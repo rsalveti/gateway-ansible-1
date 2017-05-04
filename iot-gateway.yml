@@ -1,0 +1,45 @@
+#simple ansible playbook to start the appropriate containers on a iot-gateway
+#  I just use docker commands and not the ansible docker utilities to remove 
+#  additional dependencies to the image
+
+# Host dependencies: 
+#    install ansible, 
+#    create and copy ssh key, 
+#    create mosquitto conf file, 
+#    update IP address for tiny-proxy
+#   apt -y install ansible && ssh-keygen -t rsa -f ~/.ssh/id_rsa -N ""
+#   ssh-copy-id <ip-address-of-gateway>
+
+#run the mosquitto broker
+- hosts: all
+  tasks:
+  - name: Copy mosquitto config file
+    copy:
+      src: mosquitto.conf
+      dest: /home/linaro/mosquitto.conf
+      owner: linaro
+      group: linaro
+      mode: 0755
+  - name: Start mosquitto container
+    command: sh -c "docker stop mosquitto; docker rm mosquitto; "\
+                   "docker run --restart=always -d -t --net=host "\
+                           "-v /home/linaro/mosquitto.conf:/etc/mosquitto/conf.d/mosquitto.conf "\
+                           "--name mosquitto linarotechnologies/mosquitto:latest-arm64"
+
+#run tiny-proxy
+- hosts: all
+  tasks:
+  - name: Run tiny-proxy container
+    command: sh -c "docker stop tinyproxy; docker rm tinyproxy; "\
+                   "docker run --restart=always -d -t --net=host "\
+                           "--add-host=gitci.com:192.168.0.43 "\
+                           "--name tinyproxy linarotechnologies/tinyproxy:latest-arm64"
+
+#run bt-joiner
+- hosts: all
+  tasks:
+  - name: Run bt-joiner container
+    command: sh -c "docker stop bt-joiner; docker rm bt-joiner; "\
+                   "docker run --restart=always -d -t --privileged --net=host --tmpfs=/run:rw,mode=755 --tmpfs=/run/lock "\
+                           "--name bt-joiner linarotechnologies/bt-joiner:latest-arm64"
+
