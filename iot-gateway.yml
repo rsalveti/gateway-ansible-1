@@ -6,8 +6,8 @@
 #    install ansible, 
 #    create and copy ssh key
 #    run playbook with appropriate parameters
-#  ansible-playbook -e "mqttuser= mqttpass= mqtthost= mqttport= gitci=" -i targethost, iot-gateway.yml
-
+#  ansible-playbook -e "mqttuser= mqttpass= mqtthost= mqttport= gitci= arch=" -i targethost, iot-gateway.yml
+#    where arch = -arm64, -armhf or "" for x86 (i.e. arch=)
 
 #run the mosquitto broker
 - hosts: all
@@ -40,7 +40,7 @@
     command: sh -c "docker stop mosquitto; docker rm mosquitto; "\
                    "docker run --restart=always -d -t --net=host "\
                            "-v /home/linaro/mosquitto.conf:/etc/mosquitto/conf.d/mosquitto.conf "\
-                           "--name mosquitto linarotechnologies/mosquitto:latest-arm64"
+                           "--name mosquitto linarotechnologies/mosquitto:latest{{ arch }}"
 
 #run tiny-proxy
 - hosts: all
@@ -49,7 +49,7 @@
     command: sh -c "docker stop tinyproxy; docker rm tinyproxy; "\
                    "docker run --restart=always -d -t --net=host "\
                            "--add-host=gitci.com:{{ gitci }} "\
-                           "--name tinyproxy linarotechnologies/tinyproxy:latest-arm64"
+                           "--name tinyproxy linarotechnologies/tinyproxy:latest{{ arch }}"
 
 #run bt-joiner
 - hosts: all
@@ -57,5 +57,5 @@
   - name: Run bt-joiner container
     command: sh -c "docker stop bt-joiner; docker rm bt-joiner; "\
                    "docker run --restart=always -d -t --privileged --net=host --tmpfs=/run:rw,mode=755 --tmpfs=/run/lock "\
-                           "--name bt-joiner linarotechnologies/bt-joiner:latest-arm64"
+                           "--name bt-joiner linarotechnologies/bt-joiner:latest{{ arch }}"
 
