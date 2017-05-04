@@ -1,18 +1,44 @@
-# gateway ansible scripts
+# Gateway Ansible Setup Scripts
 
-A few ansible scripts to setup your minimal system as an IoT gateway.
+Ansible scripts to setup your minimal system as an IoT gateway.
 
-### setup your host
+## Setup your host
+
+### Ubuntu/Debian
 
 ```
 apt -y install ansible
-copy your ssh key to the target systems authorized_keys file for a user that can run docker.
 ```
 
-### configure specific target as a iot-gateway (don't forget the comma)
+### Mac OS X
+
+```
+brew install ansible
+```
+
+## Deploy your SSH public key
+
+Make sure to setup your SSH public key before calling ansible:
+
+```
+ssh-copy-id <gateway host>
+```
+
+## Gateway Targets
+
+### IoT-Gateway
 
 ```
 ansible-playbook -e "mqttuser= mqttpass= mqtthost= mqttport= gitci= arch=" -i targethost, iot-gateway.yml
 ```
 
-note: the arch variableneeds to be empty (arch=) for x86, armhf (arch=armhf) or arm64 (arch=arm64)
+Arguments:
+
+ - **mqttuser**: mosquitto remote username
+ - **mqttpass**: mosquitto remote password
+ - **mqtthost**: remote mqtt address
+ - **mqttport**: remote mqtt service port
+ - **gitci**: address for your private hawkbit server
+ - **arch**: docker container architecture (e.g. -arm64, -armhf or empty for x86)
+
+**Note**: don't forget the comma after *targethost*!
