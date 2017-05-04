@@ -29,7 +29,7 @@ ssh-copy-id <gateway host>
 ### IoT-Gateway
 
 ```
-ansible-playbook -e "mqttuser= mqttpass= mqtthost= mqttport= gitci= arch=" -i targethost, iot-gateway.yml
+ansible-playbook -e "mqttuser= mqttpass= mqtthost= mqttport= gitci= tag=" -i targethost, iot-gateway.yml
 ```
 
 Arguments:
@@ -39,6 +39,6 @@ Arguments:
  - **mqtthost**: remote mqtt address
  - **mqttport**: remote mqtt service port
  - **gitci**: address for your private hawkbit server
- - **arch**: docker container architecture (e.g. -arm64, -armhf or empty for x86)
+ - **tag**: docker container tag (e.g. latest-arm64, latest-armhf or empty for latest)
 
 **Note**: don't forget the comma after *targethost*!
