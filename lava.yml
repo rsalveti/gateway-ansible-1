@@ -15,7 +15,7 @@
       mode: 0755
   - name: Run lava container (takes quite a while the first time to download the image)
     command: sh -c "docker stop lava-slave; docker rm lava-slave; "\
-                   "docker pull kernelci/lava-slave-docker-v2-lab-tbaker:{{ tag|default('latest') }} "\
+                   "docker pull kernelci/lava-slave-docker-v2-lab-tbaker:{{ tag|default('latest') }}; "\
                    "docker run -dit --restart always --privileged --name=lava-slave "\
                            "-e LAVA_MASTER={{ lavamaster }} "\
                            "-p 69:69/udp "\
