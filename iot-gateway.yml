@@ -39,6 +39,7 @@
                 line='connection mqtt-generic'
   - name: Start mosquitto container
     command: sh -c "docker stop mosquitto; docker rm mosquitto; "\
+                   "docker pull linarotechnologies/mosquitto:{{ tag|default('latest') }} "\
                    "docker run --restart=always -d -t --net=host "\
                            "-v /home/linaro/mosquitto.conf:/etc/mosquitto/conf.d/mosquitto.conf "\
                            "--name mosquitto linarotechnologies/mosquitto:{{ tag|default('latest') }}"
@@ -48,6 +49,7 @@
   tasks:
   - name: Run tiny-proxy container
     command: sh -c "docker stop tinyproxy; docker rm tinyproxy; "\
+                   "docker pull linarotechnologies/tinyproxy:{{ tag|default('latest') }} "\
                    "docker run --restart=always -d -t --net=host "\
                            "--add-host=gitci.com:{{ gitci }} "\
                            "--name tinyproxy linarotechnologies/tinyproxy:{{ tag|default('latest') }}"
@@ -61,6 +63,7 @@
       dest: /home/linaro/bluetooth_6lowpand.conf
   - name: Run bt-joiner container
     command: sh -c "docker stop bt-joiner; docker rm bt-joiner; "\
+                   "docker pull linarotechnologies/bt-joiner:{{ tag|default('latest') }} "\
                    "docker run --restart=always -d -t --privileged --net=host --tmpfs=/run:rw,mode=755 --tmpfs=/run/lock "\
                            "-v /home/linaro/bluetooth_6lowpand.conf:/etc/bluetooth/bluetooth_6lowpand.conf "\
                            "--name bt-joiner linarotechnologies/bt-joiner:{{ tag|default('latest') }}"
