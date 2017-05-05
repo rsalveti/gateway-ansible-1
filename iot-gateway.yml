@@ -55,8 +55,13 @@
 # Bt-Joiner
 - hosts: all
   tasks:
+  - name: Copy bluetooth_6lowpand config file
+    copy:
+      src: bluetooth_6lowpand.conf
+      dest: /home/linaro/bluetooth_6lowpand.conf
   - name: Run bt-joiner container
     command: sh -c "docker stop bt-joiner; docker rm bt-joiner; "\
                    "docker run --restart=always -d -t --privileged --net=host --tmpfs=/run:rw,mode=755 --tmpfs=/run/lock "\
+                           "-v /home/linaro/bluetooth_6lowpand.conf:/etc/bluetooth/bluetooth_6lowpand.conf "\
                            "--name bt-joiner linarotechnologies/bt-joiner:{{ tag|default('latest') }}"
 
