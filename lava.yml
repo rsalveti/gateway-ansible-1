@@ -1,5 +1,5 @@
 #first make sure to run the containers that make this an IoT gateway
-- include: iot-gateway.yml
+#- include: iot-gateway.yml
 
 #run lava
 - hosts: all
@@ -23,6 +23,7 @@
                            "-h {{ lavaname }} "\
                            "-v /dev:/dev "\
                            "-v /home/linaro/ser2net.conf:/etc/ser2net.conf "\
+                           "--tmpfs=/var/run/ "\
                            "-v /home/linaro/reset-port-pykush.sh:/root/scripts/reset-port-pykush.sh "\
                            "kernelci/lava-slave-docker-v2-lab-tbaker:{{ tag|default('latest') }}"
 
