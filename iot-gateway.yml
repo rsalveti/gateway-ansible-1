@@ -51,6 +51,7 @@
     command: sh -c "docker stop tinyproxy; docker rm tinyproxy; "\
                    "docker pull linarotechnologies/tinyproxy:{{ tag|default('latest') }}; "\
                    "docker run --restart=always -d -t --net=host "\
+                           "--read-only --tmpfs=/run --tmpfs=/var/log --tmpfs=/tmp "\
                            "--add-host=gitci.com:{{ gitci }} "\
                            "--name tinyproxy linarotechnologies/tinyproxy:{{ tag|default('latest') }}"
 
