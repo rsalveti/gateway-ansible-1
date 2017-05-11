@@ -41,6 +41,7 @@
     command: sh -c "docker stop mosquitto; docker rm mosquitto; "\
                    "docker pull linarotechnologies/mosquitto:{{ tag|default('latest') }}; "\
                    "docker run --restart=always -d -t --net=host "\
+                           "--read-only --tmpfs=/var/log "\
                            "-v /home/linaro/mosquitto.conf:/etc/mosquitto/conf.d/mosquitto.conf "\
                            "--name mosquitto linarotechnologies/mosquitto:{{ tag|default('latest') }}"
 
@@ -65,7 +66,8 @@
   - name: Run bt-joiner container
     command: sh -c "docker stop bt-joiner; docker rm bt-joiner; "\
                    "docker pull linarotechnologies/bt-joiner:{{ tag|default('latest') }}; "\
-                   "docker run --restart=always -d -t --privileged --net=host --tmpfs=/run:rw,mode=755 --tmpfs=/run/lock "\
+                   "docker run --restart=always -d -t --privileged --net=host "\
+                           "--read-only --tmpfs=/var/run --tmpfs=/var/lock --tmpfs=/var/log "\
                            "-v /home/linaro/bluetooth_6lowpand.conf:/etc/bluetooth/bluetooth_6lowpand.conf "\
                            "--name bt-joiner linarotechnologies/bt-joiner:{{ tag|default('latest') }}"
 
