@@ -40,8 +40,7 @@
   - name: Start mosquitto container
     command: sh -c "docker stop mosquitto; docker rm mosquitto; "\
                    "docker pull linarotechnologies/mosquitto:{{ tag|default('latest') }}; "\
-                   "docker run --restart=always -d -t --net=host "\
-                           "--read-only --tmpfs=/var/log "\
+                   "docker run --restart=always -d -t --net=host --read-only "\
                            "-v /home/linaro/mosquitto.conf:/etc/mosquitto/conf.d/mosquitto.conf "\
                            "--name mosquitto linarotechnologies/mosquitto:{{ tag|default('latest') }}"
 
@@ -52,7 +51,7 @@
     command: sh -c "docker stop tinyproxy; docker rm tinyproxy; "\
                    "docker pull linarotechnologies/tinyproxy:{{ tag|default('latest') }}; "\
                    "docker run --restart=always -d -t --net=host "\
-                           "--read-only --tmpfs=/run --tmpfs=/var/log --tmpfs=/tmp "\
+                           "--read-only --tmpfs=/var/run --tmpfs=/var/log --tmpfs=/tmp "\
                            "--add-host=gitci.com:{{ gitci }} "\
                            "--name tinyproxy linarotechnologies/tinyproxy:{{ tag|default('latest') }}"
 
