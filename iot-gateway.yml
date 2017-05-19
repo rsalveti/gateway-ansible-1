@@ -39,21 +39,21 @@
                 line='connection mqtt-generic'
   - name: Start mosquitto container
     command: sh -c "docker stop mosquitto; docker rm mosquitto; "\
-                   "docker pull linarotechnologies/mosquitto:{{ tag|default('latest') }}; "\
+                   "docker pull {{ hub|default('linarotechnologies') }}/mosquitto:{{ tag|default('latest') }}; "\
                    "docker run --restart=always -d -t --net=host --read-only "\
                            "-v /home/linaro/mosquitto.conf:/etc/mosquitto/conf.d/mosquitto.conf "\
-                           "--name mosquitto linarotechnologies/mosquitto:{{ tag|default('latest') }}"
+                           "--name mosquitto {{ hub|default('linarotechnologies') }}/mosquitto:{{ tag|default('latest') }}"
 
 # Tinyproxy
 - hosts: all
   tasks:
   - name: Run tiny-proxy container
     command: sh -c "docker stop tinyproxy; docker rm tinyproxy; "\
-                   "docker pull linarotechnologies/tinyproxy:{{ tag|default('latest') }}; "\
+                   "docker pull {{ hub|default('linarotechnologies') }}/tinyproxy:{{ tag|default('latest') }}; "\
                    "docker run --restart=always -d -t --net=host "\
                            "--read-only --tmpfs=/var/run --tmpfs=/var/log --tmpfs=/tmp "\
                            "--add-host=gitci.com:{{ gitci }} "\
-                           "--name tinyproxy linarotechnologies/tinyproxy:{{ tag|default('latest') }}"
+                           "--name tinyproxy {{ hub|default('linarotechnologies') }}/tinyproxy:{{ tag|default('latest') }}"
 
 # Bt-Joiner
 - hosts: all
@@ -64,9 +64,9 @@
       dest: /home/linaro/bluetooth_6lowpand.conf
   - name: Run bt-joiner container
     command: sh -c "docker stop bt-joiner; docker rm bt-joiner; "\
-                   "docker pull linarotechnologies/bt-joiner:{{ tag|default('latest') }}; "\
+                   "docker pull {{ hub|default('linarotechnologies') }}/bt-joiner:{{ tag|default('latest') }}; "\
                    "docker run --restart=always -d -t --privileged --net=host "\
                            "--read-only --tmpfs=/var/run --tmpfs=/var/lock --tmpfs=/var/log "\
                            "-v /home/linaro/bluetooth_6lowpand.conf:/etc/bluetooth/bluetooth_6lowpand.conf "\
-                           "--name bt-joiner linarotechnologies/bt-joiner:{{ tag|default('latest') }}"
+                           "--name bt-joiner {{ hub|default('linarotechnologies') }}/bt-joiner:{{ tag|default('latest') }}"
 
