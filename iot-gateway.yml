@@ -10,6 +10,16 @@
 #  ansible-playbook -e "mqttuser= mqttpass= mqtthost= mqttport= gitci= tag=" -i targethost, iot-gateway.yml
 #    where tag is the default docker tag (e.g. latest-arm64, latest-armhf or "" for latest)
 
+# Cleanup running containers when doing a group rollout
+- hosts: all
+  tasks:
+  - name: Cleanup for containers for group roll-out
+    command: sh -c "docker stop $(docker ps -aq); "\
+                   "docker rm $(docker ps -aq)"
+  tags:
+    - gateway
+    - demo
+
 # Mosquitto broker
 - hosts: all
   tasks:
@@ -43,17 +53,33 @@
                    "docker run --restart=always -d -t --net=host --read-only "\
                            "-v /home/linaro/mosquitto.conf:/etc/mosquitto/conf.d/mosquitto.conf "\
                            "--name mosquitto {{ hub|default('linarotechnologies') }}/mosquitto:{{ tag|default('latest') }}"
+  tags:
+    - mosquitto
+    - gateway
+    - demo
 
 # Tinyproxy
 - hosts: all
   tasks:
+  - name: remove gitci.com from /etc/hosts
+    become: true
+    become_method: sudo
+    lineinfile:
+      path: /etc/hosts
+      state: absent
+      line: '127.0.0.1 gitci.com'
   - name: Run tiny-proxy container
-    command: sh -c "docker stop tinyproxy; docker rm tinyproxy; "\
+    command: sh -c "docker stop hawkbit; docker rm hawkbit; "\
+                   "docker stop tinyproxy; docker rm tinyproxy; "\
                    "docker pull {{ hub|default('linarotechnologies') }}/tinyproxy:{{ tag|default('latest') }}; "\
                    "docker run --restart=always -d -t --net=host "\
+                           "-p 9080:8080 "\
                            "--read-only --tmpfs=/var/run --tmpfs=/var/log --tmpfs=/tmp "\
                            "--add-host=gitci.com:{{ gitci }} "\
                            "--name tinyproxy {{ hub|default('linarotechnologies') }}/tinyproxy:{{ tag|default('latest') }}"
+  tags:
+    - tinyproxy
+    - gateway
 
 # Bt-Joiner
 - hosts: all
@@ -69,4 +95,63 @@
                            "--read-only --tmpfs=/var/run --tmpfs=/var/lock --tmpfs=/var/log "\
                            "-v /home/linaro/bluetooth_6lowpand.conf:/etc/bluetooth/bluetooth_6lowpand.conf "\
                            "--name bt-joiner {{ hub|default('linarotechnologies') }}/bt-joiner:{{ tag|default('latest') }}"
+  tags:
+    - bt-joiner
+    - gateway
+    - demo
+
+# hawkbit
+- hosts: all
+  tasks:
+  - name: add gitci.com to /etc/hosts
+    become: true
+    become_method: sudo
+    lineinfile:
+      path: /etc/hosts
+      state: present
+      line: '127.0.0.1 gitci.com'
+  - name: Run hawkbit container (note takes 2-3 minutes to start on some systems)
+    command: sh -c "docker stop tinyproxy; docker rm tinyproxy; "\
+                   "docker stop hawkbit; docker rm hawkbit; "\
+                   "docker pull {{ hub|default('linarotechnologies') }}/hawkbit-update-server:{{ tag|default('latest') }}; "\
+                   "docker run --restart=always -d -t -p 8080:80 "\
+                           "--name hawkbit {{ hub|default('linarotechnologies') }}/hawkbit-update-server:{{ tag|default('latest') }}"
+  tags:
+    - hawkbit
+    - demo
+
+# Freeboard
+- hosts: all
+  tasks:
+  - name: Copy freeboard config file
+    copy:
+      src: dashboard-private.json
+      dest: /home/linaro/dashboard-private.json
+  - name: fixup ipaddress of gateway for freeboard dashboard {{ brokerhost|default('ipaddress_of_broker') }}
+    replace:
+      dest=/home/linaro/dashboard-private.json
+      regexp='brokerhost'
+      replace='{{ brokerhost|default('192.168.0.1') }}'
+      backup=yes
+  - name: fixup broker user
+    replace:
+      dest=/home/linaro/dashboard-private.json
+      regexp='brokeruser'
+      replace='{{ brokeruser|default(' ') }}'
+      backup=yes
+  - name: fixup broker pw
+    replace:
+      dest=/home/linaro/dashboard-private.json
+      regexp='brokerpw'
+      replace='{{ brokerpw|default(' ') }}'
+      backup=yes
+  - name: Run freeboard container
+    command: sh -c "docker stop freeboard; docker rm freeboard; "\
+                   "docker pull {{ hub|default('linarotechnologies') }}/freeboard-demo:{{ tag|default('latest') }}; "\
+                   "docker run --restart=always -d -t -p 80:80 "\
+                           "-v /home/linaro/dashboard-private.json:/usr/share/nginx/html/dashboard.json "\
+                           "--name freeboard {{ hub|default('linarotechnologies') }}/freeboard-demo:{{ tag|default('latest') }}"
+  tags:
+    - freeboard
+    - demo
 
