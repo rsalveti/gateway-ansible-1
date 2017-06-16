@@ -61,19 +61,10 @@
 # Tinyproxy
 - hosts: all
   tasks:
-  - name: remove gitci.com from /etc/hosts
-    become: true
-    become_method: sudo
-    lineinfile:
-      path: /etc/hosts
-      state: absent
-      line: '127.0.0.1 gitci.com'
   - name: Run tiny-proxy container
-    command: sh -c "docker stop hawkbit; docker rm hawkbit; "\
-                   "docker stop tinyproxy; docker rm tinyproxy; "\
+    command: sh -c "docker stop tinyproxy; docker rm tinyproxy; "\
                    "docker pull {{ hub|default('linarotechnologies') }}/tinyproxy:{{ tag|default('latest') }}; "\
                    "docker run --restart=always -d -t --net=host "\
-                           "-p 9080:8080 "\
                            "--read-only --tmpfs=/var/run --tmpfs=/var/log --tmpfs=/tmp "\
                            "--add-host=gitci.com:{{ gitci }} "\
                            "--name tinyproxy {{ hub|default('linarotechnologies') }}/tinyproxy:{{ tag|default('latest') }}"
@@ -103,18 +94,11 @@
 # hawkbit
 - hosts: all
   tasks:
-  - name: add gitci.com to /etc/hosts
-    become: true
-    become_method: sudo
-    lineinfile:
-      path: /etc/hosts
-      state: present
-      line: '127.0.0.1 gitci.com'
   - name: Run hawkbit container (note takes 2-3 minutes to start on some systems)
-    command: sh -c "docker stop tinyproxy; docker rm tinyproxy; "\
-                   "docker stop hawkbit; docker rm hawkbit; "\
+    command: sh -c "docker stop hawkbit; docker rm hawkbit; "\
                    "docker pull {{ hub|default('linarotechnologies') }}/hawkbit-update-server:{{ tag|default('latest') }}; "\
-                   "docker run --restart=always -d -t -p 8080:80 "\
+                   "docker run --restart=always -d -t --net=host "\
+                           "--add-host=gitci.com:{{ gitci|default('127.0.0.1') }} "\
                            "--name hawkbit {{ hub|default('linarotechnologies') }}/hawkbit-update-server:{{ tag|default('latest') }}"
   tags:
     - hawkbit
@@ -137,13 +121,13 @@
     replace:
       dest=/home/linaro/dashboard-private.json
       regexp='brokeruser'
-      replace='{{ brokeruser|default(' ') }}'
+      replace='{{ brokeruser|default('') }}'
       backup=yes
   - name: fixup broker pw
     replace:
       dest=/home/linaro/dashboard-private.json
       regexp='brokerpw'
-      replace='{{ brokerpw|default(' ') }}'
+      replace='{{ brokerpw|default('') }}'
       backup=yes
   - name: Run freeboard container
     command: sh -c "docker stop freeboard; docker rm freeboard; "\

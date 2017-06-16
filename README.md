@@ -63,7 +63,7 @@ Optional helper script
 
 ### Freeboard dashboard
 
-The sample dashboard-private.json file is used to demonstrate how to set up a persistent freeboard dashboard.  The device names and groups will have to be changed to match those in your setup.  
+The sample dashboard-private.json file is used to demonstrate how to set up a persistent freeboard dashboard.  The device names and groups will have to be changed to match those in your setup.
 
 If you modify and use dashboard-private.json, you can browse to the persistent page by appending **?load=dashboard.json**
- - i.e. http://targethost:8081/?load=dashboard.json
+ - i.e. http://targethost/?load=dashboard.json

@@ -1,6 +1,5 @@
 # Gateway target hostname
 hostname=[REPLACE WITH YOUR GATEWAY IP]
-sudopass=[GATEWAY SUDO PASSWORD]
 
 # Docker tag to use
 tag=latest-arm64
@@ -20,5 +19,4 @@ ansibletags="$1"
 ansible-playbook -e "mqttuser=$cloudmqttuser mqttpass=$cloudmqttpw mqtthost=$cloudmqtthost mqttport=$cloudmqttport "\
                  -e "gitci=$gitci tag=$tag" \
                  -e "brokerhost=$hostname brokeruser='' brokerpw=''" \
-                 -e "ansible_sudo_pass=$sudopass" \
-                  -i linaro@$hostname, iot-gateway.yml --tags $ansibletags 
+                  -i linaro@$hostname, iot-gateway.yml --tags $ansibletags
