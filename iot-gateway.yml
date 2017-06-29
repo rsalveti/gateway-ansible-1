@@ -23,19 +23,20 @@
 #  + bt-joiner
 # local - configured to run all services directly on the gateway
 #  + minimal mosquitto broker (local mqtt port on 1883, websocket port on 9001)
-#  + hawkbit (running on gateway device
+#  + hawkbit (running on gateway device)
 #  + bt-joiner
 #  + freeboard
 # There are also ansible tags for the individual items;
-#   mosquitto, tinyproxy, bt-joiner, freeboard, etc...
+#   mosquitto-local, mosquitto-cloud, tinyproxy, bt-joiner, freeboard, etc...
 
-# This task cleans up any running containers when using a gateway personality
+# This task removes all containers
 - hosts: all
   tasks:
   - name: Cleanup for containers for group roll-out
-    command: sh -c "docker stop $(docker ps -aq) ;"\
+    command: sh -c "docker stop $(docker ps -aq);"\
                    "docker rm $(docker ps -aq); echo 'PASS'"
   tags:
+    - cleanall
     - gateway
     - cloud
     - local
