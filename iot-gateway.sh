@@ -1,8 +1,8 @@
 # Gateway target hostname
 hostname=10.0.1.3
 
-# Docker tag to use
-tag=latest-arm64
+# Docker tag to use (linaro-technologies docker images now support multiple architectures)
+tag=latest
 
 # Location where hawkbit is running
 gitci=10.0.1.2
