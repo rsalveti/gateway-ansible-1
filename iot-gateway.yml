@@ -38,6 +38,7 @@
   tags:
     - cleanall
     - gateway
+    - demo
     - cloud
     - local
 
@@ -94,6 +95,7 @@
   tags:
     - mosquitto-local
     - gateway
+    - demo
     - local
 
 
@@ -110,6 +112,7 @@
   tags:
     - tinyproxy
     - gateway
+    - demo
     - cloud
 
 # Bt-Joiner
@@ -128,6 +131,7 @@
                            "--name bt-joiner {{ hub|default('linarotechnologies') }}/bt-joiner:{{ tag|default('latest') }}"
   tags:
     - bt-joiner
+    - demo
     - gateway
     - local
     - cloud
@@ -171,5 +175,50 @@
                            "--name freeboard {{ hub|default('linarotechnologies') }}/freeboard-demo:{{ tag|default('latest') }}"
   tags:
     - freeboard
-    - gateway
+    - demo
     - local
+
+# NGINX CoAP Proxy
+- hosts: all
+  tasks:
+  - name: Copy nginx config file
+    copy:
+      src: nginx-lwm2m.conf
+      dest: /home/linaro/nginx-lwm2m.conf
+  - name: Run nginx CoAP proxy container
+    command: sh -c "docker stop nginx-coap-proxy; docker rm nginx-coap-proxy; "\
+                   "docker pull {{ hub|default('linarotechnologies') }}/nginx:{{ tag|default('latest') }}; "\
+                   "docker run --restart=always -d -t --net=host "\
+                           "--read-only --tmpfs=/var/run  --add-host=gitci.com:{{ gitci }} "\
+                           "-v /home/linaro/nginx-lwm2m.conf:/etc/nginx/nginx.conf "\
+                           "--name nginx-coap-proxy {{ hub|default('linarotechnologies') }}/nginx:{{ tag|default('latest') }} "\
+                           "nginx-debug -g 'daemon off;'"
+  tags:
+    - nginx-coap-proxy
+    - demo
+    - gateway
+
+# CF CoAP-HTTP Proxy
+- hosts: all
+  tasks:
+  - name: Run CF CoAP-HTTP proxy container
+    command: sh -c "docker stop cf-proxy-coap-http; docker rm cf-proxy-coap-http; "\
+                   "docker pull {{ hub|default('linarotechnologies') }}/cf-proxy-coap-http:{{ tag|default('latest') }}; "\
+                   "docker run --restart=always -d -t --net=host --read-only "\
+                           "--name cf-proxy-coap-http {{ hub|default('linarotechnologies') }}/cf-proxy-coap-http:{{ tag|default('latest') }}"
+  tags:
+    - cf-proxy-coap-http
+    - demo
+    - gateway
+
+# LWM2M Leshan
+- hosts: all
+  tasks:
+  - name: Run LWM2M Leshan container
+    command: sh -c "docker stop leshan; docker rm leshan; "\
+                   "docker pull rsalveti/leshan:{{ tag|default('latest') }}; "\
+                   "docker run --restart=always -d -t --net=host --read-only "\
+                           "-e LESHAN_ARGS='-wp 8081' --tmpfs=/tmp "\
+                           "--name leshan rsalveti/leshan:{{ tag|default('latest') }}"
+  tags:
+    - leshan
