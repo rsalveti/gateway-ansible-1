@@ -33,8 +33,10 @@
 - hosts: all
   tasks:
   - name: Cleanup for containers for group roll-out
-    command: sh -c "docker stop $(docker ps -aq);"\
-                   "docker rm $(docker ps -aq); echo 'PASS'"
+    command: sh -c "if [ $(docker ps -a -q | head -c1 | wc -c) -ne 0 ]; then "\
+                       "docker stop $(docker ps -aq); "\
+                       "docker rm $(docker ps -aq); "\
+                   "fi"
   tags:
     - cleanall
     - gateway
