@@ -131,7 +131,7 @@
       backup=yes
   - name: Run freeboard container
     command: sh -c "docker stop freeboard; docker rm freeboard; "\
-                   "docker pull {{ hub|default('linarotechnologies') }}/freeboard-demo:{{ tag|default('latest') }}; "\
+                   "docker pull {{ hub|default('linarotechnologies') }}/freeboard:{{ tag|default('latest') }}; "\
                    "docker run --restart=always -d -t -p 80:80 "\
                            "-v /home/linaro/dashboard-private.json:/usr/share/nginx/html/dashboard.json "\
                            "--name freeboard {{ hub|default('linarotechnologies') }}/freeboard-demo:{{ tag|default('latest') }}"
