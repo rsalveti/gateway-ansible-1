@@ -27,6 +27,7 @@
 #  + hawkbit (running on gateway device)
 #  + bt-joiner
 #  + freeboard
+#  + leshan
 #
 # There are also ansible tags for the individual items;
 #   mosquitto-local, mosquitto-cloud, tinyproxy, bt-joiner, freeboard, etc...
@@ -222,3 +223,4 @@
                            "--name leshan {{ hub|default('linarotechnologies') }}/leshan:{{ tag|default('latest') }}"
   tags:
     - leshan
+    - local
