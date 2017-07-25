@@ -27,6 +27,7 @@
 #  + hawkbit (running on gateway device)
 #  + bt-joiner
 #  + freeboard
+#  + CF CoAP-HTTP proxy
 #  + leshan
 #
 # There are also ansible tags for the individual items;
@@ -211,6 +212,7 @@
     - cf-proxy-coap-http
     - demo
     - gateway
+    - local
 
 # LWM2M Leshan
 - hosts: all
