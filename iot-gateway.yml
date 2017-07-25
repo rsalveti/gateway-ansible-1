@@ -172,7 +172,7 @@
                            "-v /home/linaro/dashboards/default.json:/usr/share/nginx/html/default.json "\
                            "-v /home/linaro/dashboards/default.json:/usr/share/nginx/html/dashboard.json "\
                            "-v /home/linaro/dashboards:/usr/share/nginx/html/dashboards "\
-                           "--name freeboard {{ hub|default('linarotechnologies') }}/freeboard-demo:{{ tag|default('latest') }}"
+                           "--name freeboard {{ hub|default('linarotechnologies') }}/freeboard:{{ tag|default('latest') }}"
   tags:
     - freeboard
     - demo
