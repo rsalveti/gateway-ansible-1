@@ -216,9 +216,9 @@
   tasks:
   - name: Run LWM2M Leshan container
     command: sh -c "docker stop leshan; docker rm leshan; "\
-                   "docker pull rsalveti/leshan:{{ tag|default('latest') }}; "\
+                   "docker pull {{ hub|default('linarotechnologies') }}/leshan:{{ tag|default('latest') }}; "\
                    "docker run --restart=always -d -t --net=host --read-only "\
                            "-e LESHAN_ARGS='-wp 8081' --tmpfs=/tmp "\
-                           "--name leshan rsalveti/leshan:{{ tag|default('latest') }}"
+                           "--name leshan {{ hub|default('linarotechnologies') }}/leshan:{{ tag|default('latest') }}"
   tags:
     - leshan
