@@ -52,31 +52,13 @@
 # Mosquitto broker, cloudmqtt or IBM bluemix
 - hosts: all
   gather_facts: no
+  vars:
+    mqttconnection: mqtt-generic
   tasks:
   - name: Copy mosquitto config file
-    copy:
+    template:
       src: mosquitto.conf
       dest: /home/linaro/mosquitto.conf
-  - name: add password
-    lineinfile: dest=/home/linaro/mosquitto.conf
-                regexp='^remote_password \#'
-                insertbefore=BOF
-                line='remote_password {{ mqttpass }}'
-  - name: add username
-    lineinfile: dest=/home/linaro/mosquitto.conf
-                regexp='^remote_username \#'
-                insertbefore=BOF
-                line='remote_username {{ mqttuser }}'
-  - name: add address and port
-    lineinfile: dest=/home/linaro/mosquitto.conf
-                regexp='^address \#'
-                insertbefore=BOF
-                line='address {{ mqtthost }}:{{ mqttport }}'
-  - name: add mqtt upstream connection name
-    lineinfile: dest=/home/linaro/mosquitto.conf
-                regexp='^connection \#'
-                insertbefore=BOF
-                line='connection mqtt-generic'
   - name: Start mosquitto container
     command: sh -c "docker stop mosquitto; docker rm mosquitto; "\
                    "docker pull {{ hub|default('linarotechnologies') }}/mosquitto:{{ tag|default('latest') }}; "\
