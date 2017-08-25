@@ -35,6 +35,7 @@
 
 # This task removes all containers
 - hosts: all
+  gather_facts: no
   tasks:
   - name: Cleanup for containers for group roll-out
     command: sh -c "if [ $(docker ps -a -q | head -c1 | wc -c) -ne 0 ]; then "\
@@ -50,6 +51,7 @@
 
 # Mosquitto broker, cloudmqtt or IBM bluemix
 - hosts: all
+  gather_facts: no
   tasks:
   - name: Copy mosquitto config file
     copy:
@@ -87,6 +89,7 @@
 
 # Mosquitto 'minimal' broker
 - hosts: all
+  gather_facts: no
   tasks:
   - name: Copy mosquitto config file
     copy:
@@ -106,6 +109,7 @@
 
 # Tinyproxy
 - hosts: all
+  gather_facts: no
   tasks:
   - name: Run tiny-proxy container
     command: sh -c "docker stop tinyproxy; docker rm tinyproxy; "\
@@ -122,6 +126,7 @@
 
 # Bt-Joiner
 - hosts: all
+  gather_facts: no
   tasks:
   - name: Copy bluetooth_6lowpand config file
     copy:
@@ -143,6 +148,7 @@
 
 # hawkbit
 - hosts: all
+  gather_facts: no
   tasks:
   - name: Run hawkbit container (note takes 2-3 minutes to start on some systems)
     command: sh -c "docker stop hawkbit; docker rm hawkbit; "\
@@ -156,6 +162,7 @@
 
 # Freeboard
 - hosts: all
+  gather_facts: no
   tasks:
   - name: create dashboard directory
     file: path=/home/linaro/dashboards state=directory mode=0755
@@ -182,6 +189,7 @@
 
 # NGINX CoAP Proxy
 - hosts: all
+  gather_facts: no
   tasks:
   - name: Copy nginx config file
     copy:
@@ -202,6 +210,7 @@
 
 # CF CoAP-HTTP Proxy
 - hosts: all
+  gather_facts: no
   tasks:
   - name: Run CF CoAP-HTTP proxy container
     command: sh -c "docker stop cf-proxy-coap-http; docker rm cf-proxy-coap-http; "\
@@ -216,6 +225,7 @@
 
 # LWM2M Leshan
 - hosts: all
+  gather_facts: no
   tasks:
   - name: Run LWM2M Leshan container
     command: sh -c "docker stop leshan; docker rm leshan; "\
