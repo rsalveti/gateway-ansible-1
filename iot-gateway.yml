@@ -14,13 +14,13 @@
 #
 # gateway - start default containers for the gateway
 #  + minimal mosquitto broker (local mqtt port on 1883, websocket port on 9001)
-#  + tinyproxy (expects gitci.com IP as hawkbit will run on a different system)
+#  + nginx-http-proxy (expects gitci.com IP as hawkbit will run on a different system)
 #  + bt-joiner
 #  + NGINX CoAP proxy (expects gitci.com IP as Leshan will run on a different system)
 #  + CF CoAP-HTTP proxy
 # cloud - start containers configured to bridge mqtt data to the cloud
 #  + mosquitto configured for use with cloud service (i.e. Bluemix or Cloudmqtt)
-#  + tinyproxy (expects gitci.com IP as hawkbit will run on a different system)
+#  + nginx-http-proxy (expects gitci.com IP as hawkbit will run on a different system)
 #  + bt-joiner
 # local - configured to run all services directly on the gateway
 #  + minimal mosquitto broker (local mqtt port on 1883, websocket port on 9001)
@@ -31,7 +31,7 @@
 #  + leshan
 #
 # There are also ansible tags for the individual items;
-#   mosquitto-local, mosquitto-cloud, tinyproxy, bt-joiner, freeboard, etc...
+#   mosquitto-local, mosquitto-cloud, nginx-http-proxy, bt-joiner, freeboard, etc...
 
 # This task removes all containers
 - hosts: all
@@ -89,19 +89,25 @@
     - demo
     - local
 
-# Tinyproxy
+# NGINX HTTP Proxy
 - hosts: all
   gather_facts: no
   tasks:
-  - name: Run tiny-proxy container
-    command: sh -c "docker stop tinyproxy; docker rm tinyproxy; "\
-                   "docker pull {{ hub|default('linarotechnologies') }}/tinyproxy:{{ tag|default('latest') }}; "\
+  - name: Copy nginx config file
+    copy:
+      src: nginx-http-proxy.conf
+      dest: /home/linaro/nginx-http-proxy.conf
+  - name: Run nginx-http-proxy container
+    command: sh -c "docker stop nginx-http-proxy; docker rm nginx-http-proxy; "\
+                   "docker pull {{ hub|default('linarotechnologies') }}/nginx:{{ tag|default('latest') }}; "\
                    "docker run --restart=always -d -t --net=host "\
-                           "--read-only --tmpfs=/var/run --tmpfs=/var/log --tmpfs=/tmp "\
+                           "--read-only --tmpfs=/var/run --tmpfs=/var/cache/nginx "\
                            "--add-host=gitci.com:{{ gitci }} "\
-                           "--name tinyproxy {{ hub|default('linarotechnologies') }}/tinyproxy:{{ tag|default('latest') }}"
+                           "-v /home/linaro/nginx-http-proxy.conf:/etc/nginx/nginx.conf "\
+                           "--name nginx-http-proxy {{ hub|default('linarotechnologies') }}/nginx:{{ tag|default('latest') }} "\
+                           "nginx-debug -g 'daemon off;'"
   tags:
-    - tinyproxy
+    - nginx-http-proxy
     - gateway
     - demo
     - cloud

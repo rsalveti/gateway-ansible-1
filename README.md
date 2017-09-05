@@ -35,14 +35,14 @@ ansible-playbook -e "mqttuser= mqttpass= mqtthost= mqttport= gitci= tag=" -i tar
 Ansible tags:
 
  - --tags local      # load hawkbit, freeboard, bt-joiner, mosquitto-local, cf-proxy-coap-http and leshan
- - --tags gateway    # load mosquitto-local, tinyproxy, bt-joiner, nginx-coap-proxy and cf-proxy-coap-http
- - --tags cloud      # load mosquitto-cloud, tinyproxy and bt-joiner
- - --tags demo       # load mosquitto-local, tinyproxy, bt-joiner, freeboard, nginx-coap-proxy and cf-proxy-coap-http
+ - --tags gateway    # load mosquitto-local, nginx-http-proxy, bt-joiner, nginx-coap-proxy and cf-proxy-coap-http
+ - --tags cloud      # load mosquitto-cloud, nginx-http-proxy and bt-joiner
+ - --tags demo       # load mosquitto-local, nginx-http-proxy, bt-joiner, freeboard, nginx-coap-proxy and cf-proxy-coap-http
  - --tags mosquitto-local
  - --tags mosquitto-cloud
  - --tags hawkbit
  - --tags bt-joiner
- - --tags tinyproxy
+ - --tags nginx-http-proxy
  - --tags freeboard
  - --tags nginx-coap-proxy
  - --tags cf-proxy-coap-http
