@@ -1,5 +1,6 @@
 # Gateway target hostname
 hostname=10.0.1.3
+gatewayuser=linaro
 
 # Docker tag to use (linaro-technologies docker images now support multiple architectures)
 tag=latest
@@ -19,4 +20,4 @@ ansibletags="$1"
 ansible-playbook -e "mqttuser=$cloudmqttuser mqttpass=$cloudmqttpw mqtthost=$cloudmqtthost mqttport=$cloudmqttport "\
                  -e "gitci=$gitci tag=$tag" \
                  -e "brokerhost=$hostname brokeruser='' brokerpw=''" \
-                  -i linaro@$hostname, iot-gateway.yml --tags $ansibletags
+                 -u $gatewayuser -i $hostname, iot-gateway.yml --tags $ansibletags
