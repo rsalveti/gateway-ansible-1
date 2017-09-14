@@ -14,7 +14,7 @@ cloudmqttuser=${CLOUDMQTT_USER:-username}
 cloudmqttpw=${CLOUDMQTT_PASSWD:-password}
 
 #First argument Ansible tags
-ansibletags="$1"
+ansibletags=${1:-gateway}
 
 ansible-playbook -e "mqttuser=$cloudmqttuser mqttpass=$cloudmqttpw mqtthost=$cloudmqtthost mqttport=$cloudmqttport "\
                  -e "gitci=$gitci" \
