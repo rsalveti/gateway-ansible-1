@@ -4,9 +4,6 @@
 hostname=${GW_HOSTNAME:-10.0.1.3}
 gatewayuser=linaro
 
-# Docker tag to use (linaro-technologies docker images now support multiple architectures)
-tag=latest
-
 # Location where hawkbit is running
 gitci=${GITCI:-10.0.1.2}
 
@@ -20,6 +17,6 @@ cloudmqttpw=${CLOUDMQTT_PASSWD:-password}
 ansibletags="$1"
 
 ansible-playbook -e "mqttuser=$cloudmqttuser mqttpass=$cloudmqttpw mqtthost=$cloudmqtthost mqttport=$cloudmqttport "\
-                 -e "gitci=$gitci tag=$tag" \
+                 -e "gitci=$gitci" \
                  -e "brokerhost=$hostname brokeruser='' brokerpw=''" \
                  -u $gatewayuser -i $hostname, iot-gateway.yml --tags $ansibletags
