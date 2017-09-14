@@ -1,18 +1,20 @@
+#!/bin/bash
+
 # Gateway target hostname
-hostname=10.0.1.3
+hostname=${GW_HOSTNAME:-10.0.1.3}
 gatewayuser=linaro
 
 # Docker tag to use (linaro-technologies docker images now support multiple architectures)
 tag=latest
 
 # Location where hawkbit is running
-gitci=10.0.1.2
+gitci=${GITCI:-10.0.1.2}
 
 #Cloudmqtt configuration
-cloudmqtthost=m12.cloudmqtt.com
-cloudmqttport=18645
-cloudmqttuser=username
-cloudmqttpw=password
+cloudmqtthost=${CLOUDMQTT_HOST:-m12.cloudmqtt.com}
+cloudmqttport=${CLOUDMQTT_PORT:-18645}
+cloudmqttuser=${CLOUDMQTT_USER:-username}
+cloudmqttpw=${CLOUDMQTT_PASSWD:-password}
 
 #First argument Ansible tags
 ansibletags="$1"
